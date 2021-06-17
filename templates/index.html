@@ -1,0 +1,304 @@
+{% extends 'base.html' %}
+{% block title %}首页-发现精彩{% endblock %}
+{% load static %}
+{% block style %}
+    <style>
+        button,.btn
+        {
+            cursor: pointer;
+        }
+        label{
+            color: #aaaaaa;
+        }
+        input{
+            margin-bottom: 10px;
+        }
+
+      .bd-placeholder-img {
+        font-size: 1.125rem;
+        text-anchor: middle;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+      }
+
+      @media (min-width: 768px) {
+        .bd-placeholder-img-lg {
+          font-size: 3.5rem;
+        }
+      }
+        .jumbotron
+        {
+            border-radius: 0!important;
+            background: url({% static "img/old1.jpg" %});
+        }
+        .jumbotron-heading
+        {
+            font-size: 42px;
+            color: white;
+        }
+        #subt
+        {
+            color: antiquewhite!important;
+        }
+        .my-2{
+            width: 100px!important;
+            margin: 20px!important;
+            color: white!important;
+        }
+        #form input{
+            display: inline-block;
+            width: 200px;
+            outline: none;
+            border-top-width: 0;
+            border-left-width: 0;
+            border-right-width: 0;
+            border-bottom: 2px white solid;
+            color: white;
+            font-size: 18px;
+            margin: 20px;
+            background: rgba(0,0,0,0);
+            text-indent: 5px;
+        }
+        #type{
+            display: none!important;
+        }
+        ::-webkit-input-placeholder { /* WebKit browsers */
+          color: wheat;
+          font-size: 16px;
+        }
+        .cover-card
+        {
+            height: 225px;
+        }
+        .cover-title
+        {
+            width: 100%;
+            height: 30px;
+            text-align: center;
+            line-height: 30px;
+            background-color: rgba(0,0,0,0.4);
+            color: #dddddd;
+            font-size: 16px;
+            font-family: "Microsoft YaHei UI Bold",sans-serif;
+        }
+        .album-avatar
+        {
+            height: 50px;
+            width: 50px;
+            border-radius: 25px;
+        }
+        .creator-p
+        {
+            height: 50px;
+            margin: 0 0 0 10px;
+            font-size: 20px;
+            line-height: 50px;
+            font-family: "华文细黑", "Helvetica Neue", Helvetica, Arial, sans-serif;
+        }
+        .bottom-div
+        {
+            height: 50px;
+            width: 100%;
+            background-color: rgba(0,0,0,0.7);
+            padding: 10px;
+        }
+        .like-div
+        {
+            display: inline-block;
+            float: right;
+            margin-top: 5px;
+            margin-right: 20px;
+        }
+        .like
+        {
+            height: 20px;
+            vertical-align: top;
+            cursor: pointer;
+            transition: height 0.3s;
+        }
+        .like:hover
+        {
+            height: 22px;
+        }
+        .like-num
+        {
+            margin-top: 10px;
+            vertical-align: top;
+            height: 10px;
+            display: inline-block;
+            font-size: 16px;
+            color: white;
+            margin-left: 10px;
+            line-height: 0;
+        }
+        .album-name
+        {
+            color: white;
+            font-size: 16px;
+            margin-left: 20px;
+        }
+        .main-trans
+        {
+            width: 100%;
+            height: calc(100% - 50px);
+            cursor: pointer;
+        }
+
+    </style>
+{% endblock %}
+{% block main %}
+    <section class="jumbotron text-center">
+    <div class="container">
+      <h1 class="jumbotron-heading">imega</h1>
+      <p class="lead text-muted" id="subt">上传图片，记录生活，分享片刻精彩</p>
+       <div id="inputp">
+           <form id="form" method="post" action="in/">
+               {% csrf_token %}
+                <input placeholder="用户名 (3~20位)" type="text" name="username" id="username" autocomplete="off"/>
+                <input placeholder="密码 (6~20位)" type="password" name="password" id="password" autocomplete="off"/>
+                <input id="type" name="type"/>
+           </form>
+       </div>
+      <p>
+        <a class="btn btn-primary my-2" id="signup">注册</a>
+        <a class="btn btn-secondary my-2" id="login">登录</a>
+      </p>
+    </div>
+  </section>
+  <div class="album py-5 bg-light">
+    <div class="container">
+
+      <div class="row">
+        {% for album in albums %}
+        <div class="col-md-4">
+            <div class="card mb-4 shadow-sm" >
+                <div class="bd-placeholder-img card-img-top cover-card"
+                     style="background: url(/image/preview/{{ album.cover }})  0 0 /  cover">
+                    <div class="bottom-div">
+                        <strong class="album-name">{{ album.name }}</strong>
+                        <div class="like-div">
+                            <img class="like" src="{% static 'img/like0.svg' %}" onclick="likeAlbum(this, {{ album.id }})" alt="喜欢">
+                            <div class="like-num" id="like-{{ album.id }}">{{ album.likes }}</div>
+                        </div>
+                    </div>
+                    <div class="main-trans" title="查看"></div>
+                </div>
+                <div class="card-body">
+                  <p class="card-text">{{ album.desc }}</p>
+                  <div class="d-flex justify-content-between align-items-center">
+                    <div class="btn-group">
+                        <div class="album-avatar" style="background: url(/image/{{ album.avatar }}) 0 0 /  cover">
+                        </div>
+                        <p class="creator-p">{{ album.creator }}</p>
+                    </div>
+                    <small class="text-muted">{{ album.photo_num }} photos</small>
+                  </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+{% endblock %}
+{% block script %}
+    <script>
+    let liked = [];
+        function likeAlbum(e, id){
+            for(let l in liked)
+            {
+                if(liked[l]===id)
+                {
+                    return;
+                }
+            }
+            let like = $("#like-"+id);
+            let num = parseInt(like.html());
+            num++;
+            like.html(num);
+            liked.push(id);
+            e.src = "static/img/like1.svg";
+            $.ajax({
+                url:'/like/',
+                method:'post',
+                data:{
+                    'id':id
+                },
+                beforeSend: function(request) {
+                    request.setRequestHeader("X-CSRFToken", csrf);
+                },
+            });
+        }
+        let csrf = $.cookie("csrftoken");
+
+        $("#signup").click(function () {
+            let urn = $("#username").val();
+            let pwd = $("#password").val();
+            if(urn.length<3||urn.length>20)
+            {
+                $("#username").val("");
+                return;
+            }
+            if(pwd.length<6||pwd.length>20)
+            {
+                $("#password").val("");
+                return;
+            }
+            $.ajax({
+                url:'/in/',
+                method:'post',
+                data:{
+                    'username': urn,
+                    'password': pwd,
+                    'type': 'signup',
+                },
+                beforeSend: function(request) {
+                        request.setRequestHeader("X-CSRFToken", csrf);
+                    },
+                success:function (msg) {
+                    if(msg==='1')
+                    {
+                        window.location = '/me';
+                    }
+                    else {
+                        $("#username").val("");
+                        $("#password").val("");
+                        $("#username").attr("placeholder","用户名已注册");
+                    }
+                }
+            });
+
+        });
+        $("#login").click(function () {
+            let urn = $("#username").val();
+            let pwd = $("#password").val();
+            $.ajax({
+                url:'/in/',
+                method:'post',
+                data:{
+                    'username': urn,
+                    'password': pwd,
+                    'type': 'login',
+                },
+                beforeSend: function(request) {
+                        request.setRequestHeader("X-CSRFToken", csrf);
+                    },
+                success:function (msg) {
+                    if(msg==='1')
+                    {
+                        window.location = '/me';
+                    }
+                    else {
+                        $("#username").val("");
+                        $("#password").val("");
+                        $("#username").attr("placeholder","用户名或密码错误");
+                    }
+                }
+            });
+
+        })
+    </script>
+{% endblock %}
+

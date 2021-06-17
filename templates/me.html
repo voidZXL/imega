@@ -1,0 +1,903 @@
+{% extends 'base.html' %}
+{% block title %}我的相册-记录生活{% endblock %}
+{% load static %}
+{% block style %}
+    <style>
+            button,.btn
+        {
+            cursor: pointer;
+        }
+        label{
+            margin-right: 10px;
+            color: #aaaaaa;
+        }
+        input{
+            margin-bottom: 10px;
+        }
+        #save{
+            margin: 10px 5px 0 5px!important;
+            width: 100%;
+            color:white!important;
+            vertical-align: bottom;
+        }
+        textarea{
+            height: 100px!important;
+            margin-bottom: 20px;
+        }
+
+    .main-div{
+        margin-left: 20px;
+        width: calc(100% - 400px);
+        height: 100%;
+        white-space: nowrap;
+
+    }
+    .previewer-contain{
+        width: 100%;
+        margin: 0!important;
+        background: rgba(0,0,0,0.7);
+    }
+    #preview{
+        height: 180px!important;
+        background-size: cover;
+    }
+    #preview div{
+        cursor: pointer;color:#eeeeee;
+        width: 100%;
+        height: 100%;
+        background:rgba(10,20,10,0.5);line-height: 180px;text-align: center;
+    }
+    .previewer{
+        width: 600px;
+        height: 400px;
+        background-size: contain;
+        background-repeat: no-repeat;
+        background-position: center;
+        vertical-align: middle;
+        display: inline-block;
+    }
+    .switcher{
+        width: 800px;
+       margin-top: 20px;
+        padding: 20px;
+        height: 150px;
+        background: rgba(0,0,0,0.7);
+        overflow-x: scroll;
+        overflow-y: hidden;
+    }
+    .switcher div{
+        cursor:pointer;height: 100%;width: 100px;margin-right:20px;display:inline-block;
+    }
+    .arrow{
+        width: 40px;
+        height: 40px;
+        cursor: pointer;
+        margin-top:180px;
+    }
+    .arrow img{
+        height: 100%;
+    }
+    #arrow-r{
+        float:right;
+    }
+    #arrow-l{
+        float:left;
+    }
+    .clear{
+        clear: both;
+    }
+    .selected{
+        box-shadow: azure 0 0 10px;
+    }
+    p,div{
+        color: white;
+    }
+    #display{
+        margin-bottom: 30px;
+        padding-top: 30px;
+    }
+    .block,.block-add{
+        display: inline-block;
+        width: 240px;
+        height: 160px;
+        margin: 20px;
+        border: #3875d7 5px solid;
+        box-shadow: #aaaaaa 0 0 10px;
+    }
+    .block-add{
+        cursor: pointer;
+        transition: font-size 0.3s;
+        border: 0;
+        padding: 5px;
+        text-align: center;
+        line-height: 140px;
+        color: #aaaaaa;
+        font-size: 20px;
+    }
+    .block-add:hover{
+        font-size: 22px;
+    }
+    .bottom-div
+    {
+        height: 18px;
+        width: 200px;
+        float: left;
+        margin-left: 20px;
+    }
+    .album-name{
+        height: 70px;
+        margin: 0 0 10px 10px!important;
+        font-size: 26px;
+    }
+    .total-num{
+        text-indent: 20px;
+        font-size: 16px;
+        margin-bottom: 20px;
+        color: #dddddd;
+        width: 100%;
+    }
+    .shadow{
+        background-color: rgba(0,0,0,0.5);
+        width: calc(100% + 2px);
+        height: 100%;
+    }
+    .like-num
+    {
+        height: 100%;
+        width: 100px;
+        font-size: 18px;
+        float: left;
+        line-height: 18px;
+        margin: 0 0 0 10px!important;
+    }
+    .like
+    {
+        height: 100%;
+        float: left;
+    }
+    .trash,.download{
+        cursor: pointer;
+        float:right;
+        height: 100%;
+    }
+    .custom-control{
+        height:32px;
+    }
+    .photo-form-container
+    {
+        display: inline-block;
+        vertical-align: top;
+        width: 200px;
+        height: 400px!important;
+    }
+    label[for='public'],label[for='cand'],label[for='cover']{
+        height: 100%;
+         cursor: pointer;
+    }
+    #album-div
+    {
+        flex:none;
+        width: 300px!important;
+    }
+    #photo-desc{
+        height: 120px!important;
+    }
+    #delete{
+        background: #dc3545!important;
+    }
+    #edit{
+        cursor: pointer;
+        float: right;
+        width: 60px;
+    }
+    #space-span,#time-span{
+        color: #333333;
+        font-size: 18px;
+    }
+    #profile
+    {
+        width: 100%;
+        height: 140px;
+    }
+    #avatar-div
+    {
+        display: inline-block;
+        margin: 10px 12px 20px 80px!important;
+        width: 100px;
+        height: 100px;
+    }
+    #avatar-preview-div
+    {
+        overflow: hidden;
+        border-radius: 50px;
+        width: 100%;
+        height: 100%;
+    }
+    #avatar-preview-div img
+    {
+        width: 100%;
+        height: 100%;
+    }
+    #avatar-upload-div
+    {
+        width: 100%;
+        height: 100%;
+        line-height: 100px;
+        text-align: center;
+        cursor: pointer;
+        background: black;
+        border-radius: 50px;
+        opacity: 0;
+        transition: opacity 0.5s;
+    }
+    #avatar-upload-div:hover
+    {
+        opacity: 0.6;
+    }
+    #crop-button
+    {
+        display: none;
+        vertical-align: top;
+        margin-left: 10px;
+        width: 80px;
+        height: 40px;
+    }
+    #cancel-crop,#cancel-info
+    {
+        background: #999999;
+    }
+    #avatar-cropper-container
+    {
+        overflow: hidden;
+        display: none;
+        width: 160px;
+        height: 100px;
+        border: 5px #417690 solid;
+        box-shadow: #444444 0 0 5px;
+        border-radius: 4px;
+    }
+    #avatar-container
+    {
+        width: 155px;
+        border: 0;
+        height: 102px;
+    }
+    .line{
+        width: 100%;
+        background-color: #dddddd;
+        height: 1px;
+        font-family: "华文细黑","Helvetica Neue", Helvetica, Arial, sans-serif;
+        line-height: 60px;
+        font-size: 26px;
+        color: #888888;
+    }
+    .row{
+        padding-top: 50px;
+    }
+    #main-cover
+    {
+        z-index: 999;
+        display: none;
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        left: 0;
+        top: 0;
+        background-color: rgba(0,0,0,0.5);
+    }
+    #info-block{
+        position: absolute;
+        top: 200px;
+        width: 400px;
+        height: 200px;
+        border-radius: 10px;
+        background-color: white;
+        margin: 0 auto;
+        left: 0;right: 0;
+        padding: 40px;
+    }
+    #info-block p{
+        font-size: 18px;
+        color: black;
+    }
+    #info-button{
+        position: absolute;
+        right: 30px;
+        bottom: 20px;
+
+    }
+    #info-button a{
+        margin-left: 10px!important;
+    }
+    #profile-display{
+        vertical-align: top;
+        display: inline-block;
+        width: 400px;
+        height: 100px;
+        padding-top: 10px;
+    }
+    #profile-display span{
+        display: inline-block;
+        margin: 0 !important;
+    }
+    .dpn{
+        margin: 0 !important;
+        color: black;
+        font-size: 24px;
+        width: 80px;
+    }
+    #span1
+    {
+        width: 120px;
+    }
+
+
+    </style>
+{% endblock %}
+{% block main %}
+    <div id="main-cover">
+        <div id="info-block">
+            <p id="notice"></p>
+            <div id="info-button">
+                <a class="btn btn-primary my-2" id="confirm-info">确定</a>
+                <a class="btn btn-secondary my-2" id="cancel-info">取消</a>
+            </div>
+        </div>
+    </div>
+  <div class="album py-5 bg-light">
+    <div class="container">
+        <div id="profile">
+            <div class="line">Profile</div>
+            <div id="avatar-div">
+                <input id="avatar-input" type="file" accept="image/*" onchange="cropCover(this);" style="display: none;">
+                <div id="avatar-preview-div" style="background: url(/image/{{ avatar }}) 0 0 /  cover">
+                    <div id="avatar-upload-div" onclick="$('#avatar-input').trigger('click');">上传头像</div>
+                </div>
+
+            </div>
+            <div id="avatar-cropper-container">
+                <div id="avatar-container"></div>
+            </div>
+            <div id="crop-button">
+                <a class="btn btn-primary my-2" id="confirm-crop">确定</a>
+                <a class="btn btn-secondary my-2" id="cancel-crop">取消</a>
+            </div>
+            <div id="profile-display">
+                <span id="span1">
+                    <label for="urn">用户名：</label>
+                    <p id="urn" class="dpn">{{ username }}</p>
+                </span>
+                <span>
+                    <label for="aln">相册数：</label>
+                    <p id="aln" class="dpn">{{ albums|length }}</p>
+                </span>
+                <span>
+                    <label for="ptn">照片数：</label>
+                    <p id="ptn" class="dpn">{{ photo_num }}</p>
+                </span>
+                <span>
+                    <label for="lkn">总赞数：</label>
+                    <p id="lkn" class="dpn">{{ like_total }}</p>
+                </span>
+            </div>
+        </div>
+        <div class="line">Album</div>
+        <div id="display" class="row">
+            {% for album in albums %}
+                <div class="block" style="background: url(/image/preview/{{ album.cover }})  0 0 /  cover">
+                    <img src="{% static 'img/edit.svg' %}" id="edit"
+                         onclick="albumEdit({{ album.id }})" title="查看并编辑" alt="编辑">
+                    <div class="shadow">
+                        <p class="album-name">{{ album.name }}</p>
+                        <p class="total-num">共{{ album.photo_num }}张照片</p>
+                        <div class="bottom-div">
+                            <img class="like" src="{% static 'img/like1.svg' %}" alt="喜欢">
+                            <span class="like-num">{{ album.likes }}</span>
+                            <img class="trash" src="{% static 'img/trash.svg' %}"
+                                 onclick="deleteAlbum({{ album.id }},'{{ album.name }}')" title="删除相册" alt="删除">
+                            <img class="download" src="{% static 'img/download.svg' %}"
+                                 onclick="downloadAlbum({{ album.id }},'{{ album.name }}')" title="批量下载" alt="下载">
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+            <div class="block-add" onclick="clearAdd()">
+                <div class="shadow">
+                    创建相册
+                </div>
+            </div>
+        </div>
+        <div class="line">Preview</div>
+      <div class="row" style="display: none">
+        <div class="col-md-4" id="album-div">
+          <div class="card mb-4 shadow-sm">
+              <div id="preview" style="width: 100%;height: 225px;">
+                <div onclick="$('#photo').trigger('click')">上传照片</div>
+              </div>
+            <div class="card-body">
+                <div class="form-container">
+                    <form id="album-form" action="/album/" method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <input id="photo" multiple="multiple" style="display: none;" type="file" accept="image/*" alt=""/>
+                        <label for="name">相册名称</label>
+                        <input name="name" id="name" class="form-control" type="text" alt=""/>
+                        <label for="desc">相册描述</label>
+                        <textarea name="desc" id="desc" class="form-control"></textarea>
+                    </form>
+                    <label for="time-span">创建时间:</label>
+                    <span id="time-span"></span>
+                    <label for="space-span">全部大小:</label>
+                    <span id="space-span"></span>
+                    <div class="custom-control custom-switch">
+                      <input type="checkbox" onclick="publicChange()" class="custom-control-input" id="public">
+                      <label class="custom-control-label" for="public">公开</label>
+                    </div>
+                </div>
+              <div class="d-flex justify-content-between align-items-center">
+                    <a class="btn btn-primary my-2" onclick="handleSubmit()" id="save">保存</a>
+              </div>
+            </div>
+          </div>
+        </div>
+          <div class="main-div">
+              <div class="previewer-contain">
+                  <div class="previewer">
+                      <div id="arrow-l" class="arrow">
+                          <img src="{% static 'img/arrow-l.svg' %}" alt="">
+                      </div>
+                       <div id="arrow-r" class="arrow">
+                          <img src="{% static 'img/arrow-r.svg' %}" alt="">
+                      </div>
+                       <div class="clear"></div>
+                  </div>
+                  <div class="photo-form-container card">
+                      <div class="card-body">
+                          <form id="photo-form">
+                                <label for="name">照片名称</label>
+                                <input name="name" id="photo-name" class="form-control" type="text" alt=""/>
+                                <label for="desc">照片描述</label>
+                                <textarea name="desc" id="photo-desc" class="form-control"></textarea>
+                          </form>
+                          <div class="custom-control custom-switch">
+                              <input type="checkbox" class="custom-control-input" id="cover"
+                              onclick="handleCover()">
+                              <label class="custom-control-label" for="cover">设为相册封面</label>
+                          </div>
+                          <div class="custom-control custom-switch">
+                              <input type="checkbox" class="custom-control-input" id="cand"
+                                     onclick="if(!$('#public')[0].checked){$('#public').trigger('click');}">
+                              <label class="custom-control-label" for="cand">允许访客下载</label>
+                          </div>
+                          <div class="d-flex justify-content-between align-items-center">
+                                <a class="btn btn-primary my-2" id="download">下载</a>
+                                <a class="btn btn-secondary my-2" onclick="deletePhoto()" id="delete">删除</a>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+
+              <div class="switcher"></div>
+          </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}
+{% block script %}
+    <script>
+        let previews = [];
+        let deletes = [];
+        let files = [];
+        let photos = [];
+        let originl = 0;
+        let select = 0;
+        let cover_i = 0;
+        let pd_list = [];
+        let xhr=new XMLHttpRequest();
+        let create=true;
+        let aid=0;
+        let csrf = $.cookie("csrftoken");
+        let cropper = '';
+        let container = $("#avatar-container");
+        let r=1,h=200;
+
+        function cropCover(obj) {
+
+            //let box = $("#upload-photo-box");
+            $("#avatar-cropper-container").css("display", "inline-block");
+            $("#crop-button").css("display","inline-block");
+            let img = new Image();
+            img.className = "upload-img";
+            img.src = getObjectURL(obj.files[0]);
+            container.html(img);
+            //$(".photo-b").css("display", "inline");
+
+            //container.css("display", "inline");
+            //container.attr("class", "container-active");
+            ///console.log("c=", cropper);
+            //cropper: minContainerWidth:200
+            cropper = new Cropper(img, {
+                minContainerWidth:150,
+                aspectRatio: r,
+                viewMode: 2,
+                preview: '#avatar-preview-div',
+                crop: function (e) {
+                }
+            });
+            container.css("display", "inline");
+        }
+        $("#confirm-crop").mousedown(function () {
+                let blobURL = "";
+                cropper.getCroppedCanvas({width: r*h, height: h}).toBlob(blob => {
+                    blobURL = getObjectURL(blob);
+                    console.log(blob, blobURL);
+                    let newPreIMG = new Image();
+                    newPreIMG.src = blobURL;
+                    newPreIMG.width = r*h;
+                    newPreIMG.height = h;
+                    let fdata = new FormData();
+                    fdata.append('file', blob);
+                    let xhr = new XMLHttpRequest();
+                    xhr.open("POST", "avatar", true);
+                    xhr.setRequestHeader("X-CSRFToken", csrf);
+                    xhr.onreadystatechange = function () {
+                        if(xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
+                            let r = xhr.responseText;
+                            if(r==='0')
+                            {
+                                alert('上传失败');
+                            }
+                             window.location.reload();
+                        }
+                    };
+                    xhr.send(fdata)
+                });
+                cropper.destroy();
+                container.css("display", "none");
+                //cover_button.attr("class", "photo-upload-img loaded-img");
+                $("#avatar-cropper-container").css("display", "none");
+                $("#crop-button").css("display","none");
+            });
+        $("#cancel-crop").mousedown(function () {
+                cropper.destroy();
+                container.css("display", "none");
+                //cover_button.attr("class", "photo-upload-img loaded-img");
+                $("#avatar-cropper-container").css("display", "none");
+                $("#crop-button").css("display","none");
+            });
+        //document.getElementsByName("csrfmiddlewaretoken")[0].value;
+        $("#photo").change(function (e) {
+            let dom='';
+            let l = e.target.files.length;
+            //let fl = files.length;
+            let bl = pd_list.length+1;//?(pd_list[pd_list.length-1]+1):0;//previews.length;
+
+
+            for(let i=0;i<l;i++)
+            {
+                pd_list.push(bl+i);
+                let f = e.target.files[i];
+                let s = String(getObjectURL(f));
+                files.push(f);
+                previews.push(s);
+                photos.push({
+                    'name':'',
+                    'desc':'',
+                    //'image':f.name,
+                    'can_download':false
+                });
+                dom += "<div id=\"pd"+(bl+i)+"\" style=\"background: url("+s+") 0 0 / cover;\"></div>";
+            }
+            $(".switcher").append(dom);
+            if(previews.length===l)
+            {
+                create=true;
+                changeFocus(pd_list[select],pd_list[select]);
+                handleCover();
+            }
+            for(let i=0;i<l;i++)
+            {
+                $("#pd"+(bl+i)).click(function () {
+                    changeFocus(pd_list[select], bl+i);
+                });
+            }
+            console.log(pd_list,bl);
+        });
+        let name = $("#photo-name");
+        let desc = $("#photo-desc");
+        let cand = $("#cand");
+
+
+        function clearAdd() {
+            $(".row").css("display","flex");
+            $(".switcher").html("");
+            $("#preview").css("background-image","");
+            $(".previewer").css("background-image","");
+            $("#name").val("");
+            $("#desc").val("");
+            $("#photo-name").val("");
+            $("#photo-desc").val("");
+            $("#time-span").html("");
+            $("#space-span").html("");
+            $("#public").checked = false;
+            previews = [];
+            deletes = [];
+            files = [];
+            photos = [];
+            originl = 0;
+            select = 0;
+            cover_i = 0;
+            pd_list = [];
+            xhr=new XMLHttpRequest();
+            create=true;
+            aid=0;
+            $("#name").attr('placeholder','');
+            $('#photo').trigger('click');
+        }
+        function changeFocus(outs,ins){
+            console.log(outs,ins,pd_list);
+            $("#pd"+outs).removeAttr("class");
+            select = pd_list.indexOf(ins);
+            $(".previewer").css({backgroundImage:"url("+previews[select]+")"});
+            let p = photos[select];
+            console.log('p:',p);
+
+            name.val(p['name']);
+            desc.val(p['desc']);
+            cand[0].checked = p['can_download'];
+            $("#cover")[0].checked = (cover_i===select);
+            $("#download").attr({href: '/image/raw/'+p['image'],download:p['name'] || "photo"});
+            $("#pd"+ins).attr("class","selected");
+        }
+        name.change(function () {
+            photos[select]['name'] = name.val();
+         });
+         desc.change(function () {
+             photos[select]['desc'] = desc.val();
+         });
+         cand.click(function () {
+             photos[select]['can_download'] = cand[0].checked;
+         });
+        let infoCallback = function () {
+
+        };
+
+        function noticeCover(n, op=true) {
+            $("#notice").html(n);
+            $("#main-cover").css({display:"inline",top:$(document).scrollTop()+'px'});
+            if(!op)
+            {
+                $("#info-button").css("display","none")
+            }
+            else
+            {
+                $("#info-button").css("display","inline")
+            }
+            $("body").css("overflow","hidden")
+        }
+        $("#confirm-info").click(function () {
+            $("#main-cover").css({display:"none"});
+            $("body").css("overflow","auto");
+            infoCallback();
+            infoCallback = function () {
+                
+            }
+        });
+        $("#cancel-info").click(function () {
+            $("#main-cover").css({display:"none"});
+            $("body").css("overflow","auto")
+        });
+        function deletePhoto(){
+            if(pd_list.length>1) {
+                $("#pd" + pd_list[select]).remove();
+                if (photos[select].hasOwnProperty('id')) {
+                    deletes.push(photos[select]['id']);
+                }
+                previews.splice(select, 1);
+                photos.splice(select, 1);
+                pd_list.splice(select, 1);
+                if (select > originl) {
+                    files.splice(select - originl, 1);
+                }
+
+                if (cover_i === select) {
+                    select = 0;
+                    handleCover();
+                } else if (cover_i > select) {
+                    cover_i--;
+                }
+                changeFocus(pd_list[select], pd_list[0]);
+            }else
+            {
+                alert("再进行删除就没有照片了，可以直接删除相册");
+            }
+        }
+        function deleteAlbum(id, name){
+            let notice = "你确定删除相册 " + name+" 吗？";
+            noticeCover(notice);
+            infoCallback = function () {
+                $.ajax({
+                    url:'/album/'+id,
+                    method:'delete',
+                    beforeSend: function(request) {
+                        request.setRequestHeader("X-CSRFToken", csrf);
+                    },
+                    success:function (msg) {
+                        window.location.reload();
+                    }
+                })
+            };
+
+        }
+        function downloadAlbum(id, name){
+            noticeCover("下载请求中，请稍等");
+            let link = document.createElement('a');
+            link.setAttribute("download", name + ".zip");
+            link.href = "/download/"+id;
+            link.click();
+        }
+        function publicChange(){
+            if(!$('#public')[0].checked)
+            {
+                for(let p of photos){
+                    p['can_download'] = false;
+                    $("#cand")[0].checked = false;
+                }
+            }
+        }
+
+        $("#arrow-l").click(function () {
+            if(select)
+            {
+                 changeFocus(pd_list[select], pd_list[select-1]);
+            }
+            else
+            {
+                changeFocus(pd_list[select], pd_list[previews.length-1]);
+            }
+        });
+        $("#arrow-r").click(function () {
+            if(select<previews.length-1)
+            {
+                changeFocus(pd_list[select], pd_list[select+1]);
+            }
+            else
+            {
+                changeFocus(pd_list[select], pd_list[0]);
+            }
+        });
+
+        function handleCover() {
+
+            cover_i = select;
+            //console.log(previews,cover_i,previews[cover_i]);
+            $("#preview").css({backgroundImage:"url("+previews[cover_i]+")"});
+        }
+
+
+        function handleSubmit(){
+            noticeCover("相册保存中，请稍等",false);
+            if(files.length||!create)
+            {
+                let method = 'post';
+                let url = '/album';
+                let fd = new FormData($("#album-form")[0]);
+                if(!fd.get('name'))
+                {
+                    $("#name").attr('placeholder','请填写相册名称');
+                    return;
+                }else
+                {
+                    if(fd.get('name').length>10)
+                    {
+                        $("#name").attr('placeholder','相册名称不要超过10个字符');
+                        $("#name").val("");
+                        return;
+                    }
+                }
+                fd.set('public',$("#public")[0].checked);
+                fd.set('cover', cover_i);
+
+                if(!create)
+                {
+                    url = url + '/' + aid;
+                    method = 'put';
+                }
+
+                for(let i=0;i<files.length;i++)
+                {
+                    fd.append('file',files[i]);
+                }
+                for(let i=0;i<photos.length;i++)
+                {
+                    delete photos[i]['image'];
+                    fd.append('photos',JSON.stringify(photos[i]));
+                }
+                if(deletes.length)
+                {
+                    for(let i=0;i<deletes.length;i++)
+                    {
+                        fd.append('deletes',deletes[i]);
+                    }
+                }else{
+                    fd.append('deletes','');
+                }
+
+                //console.log(fd);
+                let xhr=new XMLHttpRequest();
+                xhr.open(method, url);
+                xhr.setRequestHeader("X-CSRFToken", csrf);
+                xhr.onreadystatechange = function () {
+                    if(xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
+                        let r = xhr.responseText;
+                        if(r==='0')
+                        {
+                            alert('上传失败');
+                        }
+                         window.location.reload();
+                    }
+                };
+                xhr.send(fd);
+            }
+            else
+            {
+                alert('请选择照片');
+            }
+        }
+        function albumEdit(id) {
+            aid = id;
+            $.ajax({
+                type:'GET',
+                url:'/album/'+id,
+                success:function (msg) {
+                    $(".row").css("display","flex");
+                    create=false;
+                    let dom = '',i=0;
+                    $("#name").val(msg['name']);
+                    $("#desc").val(msg['desc']);
+                    $("#time-span").html(msg['date']);
+                    $("#space-span").html(msg['size']);
+                    $("#public")[0].checked = msg['public'];
+                    select = msg['cover_i'];
+
+                    photos = msg['photos'];
+                    originl=photos.length;
+                    previews = [];
+                    for(let p of msg['photos']){
+                        let t_url = '/image/thumb/'+p['image'];
+                        let p_url =  '/image/preview/'+msg['photos'][i]['image'];
+                        previews.push(p_url);
+                        dom += "<div id=\"pd"+i+"\" style=\"background: url("+t_url+") 0 0 / cover;\"></div>";
+                        //delete photos[i]["image"];
+                        i++;
+                    }
+                    $(".switcher").html(dom);
+                    files=[];
+                    pd_list=[];
+                    handleCover();
+                    for(let i=0;i<msg['photos'].length;i++)
+                    {
+                        pd_list.push(i);
+                        $("#pd"+i).click(function () {
+                            changeFocus(pd_list[select],i);
+                        });
+                    }
+                    changeFocus(pd_list[select],pd_list[0]);
+                }
+            });
+
+        }
+        function getObjectURL(file) {
+            let url = null;
+            // 下面函数执行的效果是一样的，只是需要针对不同的浏览器执行不同的 js 函数而已
+            if (window.createObjectURL !== undefined) { // basic
+                url = window.createObjectURL(file);
+            } else if (window.URL !== undefined) { // mozilla(firefox)
+                url = window.URL.createObjectURL(file);
+            } else if (window.webkitURL !== undefined) { // webkit or chrome
+                url = window.webkitURL.createObjectURL(file);
+            }
+            return url;
+        }
+    </script>
+{% endblock %}
+

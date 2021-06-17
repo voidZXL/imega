@@ -1,0 +1,12 @@
+# Created by .ignore support plugin (hsz.mobi)
+.idea
+*/__pycache__
+__pycache__/
+*.py[cod]
+*.log
+*.sqlite3
+*.ai
+*.png
+*.jpg
+*.jpeg
+*.zip
