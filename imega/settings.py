@@ -52,11 +52,6 @@ MIDDLEWARE = [
     # 'photo.middleware.JSONParsingMiddleware'
 ]
 
-LOG = {
-    'type': 'file', # or stream
-    'dir': os.path.join(BASE_DIR, 'debug.log')
-}
-
 ROOT_URLCONF = 'imega.urls'
 
 TEMPLATES = [
